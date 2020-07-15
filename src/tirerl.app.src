@@ -7,7 +7,8 @@
      stdlib,
      jsx,
      hackney,
-     worker_pool
+     worker_pool,
+     lager
     ]},
   {modules, []},
   {registered, []},

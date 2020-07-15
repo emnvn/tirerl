@@ -132,7 +132,7 @@ do_request(Req, #{base_url := BaseUrl}) ->
         end,
 
     URL = <<BaseUrl/binary, (list_to_binary(FullUri))/binary>>,
-
+    lager:debug("Full Url: ~p, Method: ~p, Header: ~p, Nody: ~p~n",[URL, Method, Headers, Body1]),
     try
         Response = case hackney:request(Method, URL, Headers, Body1) of
             {ok, StatusCode, _Headers, ClientRef} ->
@@ -241,39 +241,47 @@ make_request({is_type, Index, Type}) ->
     Uri = join([IndexList, TypeList], <<"/">>),
     #{method => head, uri => Uri};
 
-make_request({insert_doc, Index, Type, undefined, Doc, Params}) ->
-    Uri = make_uri([Index, Type], Params),
+make_request({insert_doc, Index, _Type, undefined, Doc, Params}) ->
+    %%emnvn ignore
+    Uri = make_uri([Index, ?DOC], Params),
     #{method => post,
       uri => Uri,
       body => Doc};
 
-make_request({insert_doc, Index, Type, Id, Doc, Params}) ->
+make_request({insert_doc, Index, _Type, Id, Doc, Params}) ->
+    %%emnvn ignore
     #{method => put,
-      uri => make_uri([Index, Type, Id], Params),
+      uri => make_uri([Index, ?DOC, Id], Params),
       body => Doc};
 
-make_request({update_doc, Index, Type, Id, Doc, Params}) ->
-    Uri = make_uri([Index, Type, Id, ?UPDATE], Params),
+make_request({update_doc, Index, _Type, Id, Doc, Params}) ->
+    %%emnvn ignore
+    Uri = make_uri([Index, ?DOC, Id, ?UPDATE], Params),
     #{method => post,
       uri => Uri,
       body => Doc};
 
-make_request({is_doc, Index, Type, Id}) ->
-    Uri = make_uri([Index, Type, Id], []),
+make_request({is_doc, Index, _Type, Id}) ->
+    %emnvn ignore
+    Uri = make_uri([Index, ?DOC, Id], []),
     #{method => head, uri => Uri};
 
-make_request({get_doc, Index, Type, Id, Params}) ->
-    #{method => get, uri => make_uri([Index, Type, Id], Params)};
+make_request({get_doc, Index, _Type, Id, Params}) ->
+    %emnvn ignore
+    #{method => get, uri => make_uri([Index, ?DOC, Id], Params)};
 
-make_request({mget_doc, Index, Type, Doc}) ->
-    Uri = make_uri([Index, Type, ?MGET], []),
+make_request({mget_doc, Index, _Type, Doc}) ->
+    %emnvn ignore
+    Uri = make_uri([Index, ?DOC, ?MGET], []),
     #{method => get, uri => Uri, body => Doc};
 
-make_request({delete_doc, Index, Type, Id, Params}) ->
-    #{method => delete, uri => make_uri([Index, Type, Id], Params)};
+make_request({delete_doc, Index, _Type, Id, Params}) ->
+    %emnvn ignore
+    #{method => delete, uri => make_uri([Index, ?DOC, Id], Params)};
 
-make_request({search, Index, Type, Doc, Params}) ->
-    Uri = make_uri([Index, Type, ?SEARCH], Params),
+make_request({search, Index, _Type, Doc, Params}) ->
+    %emnvn ignore
+    Uri = make_uri([Index, ?DOC, ?SEARCH], Params),
     #{method => get,
       uri => Uri,
       body => Doc};
@@ -288,8 +296,9 @@ make_request({bulk, Index, <<>>, Doc}) ->
     #{method => post,
       uri => Uri,
       body => Doc};
-make_request({bulk, Index, Type, Doc}) ->
-    Uri = make_uri([Index, Type, ?BULK], []),
+make_request({bulk, Index, _Type, Doc}) ->
+    %emnvn ignore
+    Uri = make_uri([Index, ?DOC, ?BULK], []),
     #{method => post,
       uri => Uri,
       body => Doc};
@@ -319,19 +328,22 @@ make_request({clear_cache, Index, Params}) ->
     Uri = make_uri([IndexList, ?CLEAR_CACHE], Params),
     #{method => post, uri => Uri};
 
-make_request({put_mapping, Indexes, Type, Doc}) ->
+make_request({put_mapping, Indexes, _Type, Doc}) ->
     IndexList = join(Indexes, <<", ">>),
+    %emnvn ignore
     #{method => put,
-      uri => join([IndexList, ?MAPPING, Type], <<"/">>),
+      uri => join([IndexList, ?MAPPING, ?DOC], <<"/">>),
       body => Doc};
 
-make_request({get_mapping, Indexes, Type}) ->
+make_request({get_mapping, Indexes, _Type}) ->
+    %emnvn ignore
     IndexList = join(Indexes, <<", ">>),
-    #{method => get, uri => join([IndexList, ?MAPPING, Type], <<"/">>)};
+    #{method => get, uri => join([IndexList, ?MAPPING, ?DOC], <<"/">>)};
 
-make_request({delete_mapping, Indexes, Type}) ->
+make_request({delete_mapping, Indexes, _Type}) ->
+    %emnvn ignore
     IndexList = join(Indexes, <<", ">>),
-    #{method => delete, uri => join([IndexList, ?MAPPING, Type], <<"/">>)};
+    #{method => delete, uri => join([IndexList, ?MAPPING, ?DOC], <<"/">>)};
 
 make_request({aliases, Doc}) ->
     Uri = ?ALIASES,

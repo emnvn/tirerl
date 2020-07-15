@@ -22,6 +22,7 @@
 -define(ALIAS, <<"_alias">>).
 -define(UPDATE, <<"_update">>).
 -define(BULK, <<"_bulk">>).
+-define(DOC, <<"_doc">>).
 
 % Shortcuts
 -define(ALL, <<"_all">>).
